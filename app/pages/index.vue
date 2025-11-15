@@ -23,6 +23,10 @@ const currentTag = ref('')
 const isLoading = ref(false)
 const error = ref<string | null>(null)
 const alternativeReason = ref('')
+const showAlternativePanel = computed(
+  () =>
+    !!selectedSkillNode.value && selectedSkillNode.value.id.includes('tree_'),
+)
 
 const loadAllTrees = async () => {
   isLoadingTrees.value = true
@@ -263,122 +267,76 @@ const handleAddAlternativeSolution = async () => {
         </div>
       </div>
 
-      <UCard>
-        <template #header>
-          <div class="flex justify-between items-center">
-            <h2 class="text-xl font-semibold">
-              Деревья решений ({{ decisionTrees.length }})
-            </h2>
-            <UButton
-              :loading="isLoadingTrees"
-              @click="loadAllTrees"
-              color="neutral"
-              variant="ghost"
-              size="sm"
+      <div class="relative">
+        <UCard>
+          <template #header>
+            <div class="flex justify-between items-center">
+              <h2 class="text-xl font-semibold">
+                Деревья решений ({{ decisionTrees.length }})
+              </h2>
+              <UButton
+                :loading="isLoadingTrees"
+                @click="loadAllTrees"
+                color="neutral"
+                variant="ghost"
+                size="sm"
+              >
+                Обновить
+              </UButton>
+            </div>
+          </template>
+          <div class="w-full h-full bg-white">
+            <div
+              v-if="isLoadingTrees"
+              class="flex items-center justify-center"
+              :style="{ height: `${skillTreeSettings.viewport.height}px` }"
             >
-              Обновить
-            </UButton>
-          </div>
-        </template>
-        <div class="w-full h-full bg-white">
-          <div
-            v-if="isLoadingTrees"
-            class="flex items-center justify-center"
-            :style="{ height: `${skillTreeSettings.viewport.height}px` }"
-          >
-            <div class="text-gray-400">Загрузка деревьев...</div>
-          </div>
-          <SkillTree
-            v-else-if="allSkillNodes.length > 0"
-            :skills="allSkillNodes"
-            :selected-node-id="
-              fromNodeForAlternative?.id ||
-              toNodeForAlternative?.id ||
-              selectedSkillNode?.id ||
-              null
-            "
-            :width="skillTreeSettings.viewport.width"
-            :height="skillTreeSettings.viewport.height"
-            :vertical-gap="skillTreeSettings.layout.verticalGap"
-            :horizontal-gap="skillTreeSettings.layout.horizontalGap"
-            :node-sizing="skillTreeSettings.node"
-            @background-click="selectedSkillNode = null"
-            @node-click="handleSkillNodeClick"
-          />
-          <div
-            v-else
-            class="flex items-center justify-center text-gray-400"
-            :style="{ height: `${skillTreeSettings.viewport.height}px` }"
-          >
-            Нет деревьев. Создайте новую проблему для начала.
-          </div>
-        </div>
-        <SkillDescription :selected-node="selectedSkillNode" />
-      </UCard>
-
-      <div
-        v-if="selectedSkillNode && selectedSkillNode.id.includes('tree_')"
-        class="mt-6 bg-white rounded-lg shadow p-6"
-      >
-        <h3 class="font-semibold mb-4">Добавить альтернативный путь</h3>
-
-        <div class="mb-4">
-          <p class="text-sm text-gray-600 mb-2">
-            Выберите две связанные ноды для создания альтернативного пути между
-            ними:
-          </p>
-          <div class="space-y-2">
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-medium text-gray-700">От:</span>
-              <span
-                v-if="fromNodeForAlternative"
-                class="px-3 py-1 bg-blue-100 text-blue-800 rounded text-sm"
-              >
-                {{ fromNodeForAlternative.label }}
-              </span>
-              <span v-else class="text-sm text-gray-400">Не выбрано</span>
+              <div class="text-gray-400">Загрузка деревьев...</div>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-medium text-gray-700">До:</span>
-              <span
-                v-if="toNodeForAlternative"
-                class="px-3 py-1 bg-green-100 text-green-800 rounded text-sm"
-              >
-                {{ toNodeForAlternative.label }}
-              </span>
-              <span v-else class="text-sm text-gray-400">Не выбрано</span>
+            <SkillTree
+              v-else-if="allSkillNodes.length > 0"
+              :skills="allSkillNodes"
+              :selected-node-id="
+                fromNodeForAlternative?.id ||
+                toNodeForAlternative?.id ||
+                selectedSkillNode?.id ||
+                null
+              "
+              :width="skillTreeSettings.viewport.width"
+              :height="skillTreeSettings.viewport.height"
+              :vertical-gap="skillTreeSettings.layout.verticalGap"
+              :horizontal-gap="skillTreeSettings.layout.horizontalGap"
+              :node-sizing="skillTreeSettings.node"
+              @background-click="selectedSkillNode = null"
+              @node-click="handleSkillNodeClick"
+            />
+            <div
+              v-else
+              class="flex items-center justify-center text-gray-400"
+              :style="{ height: `${skillTreeSettings.viewport.height}px` }"
+            >
+              Нет деревьев. Создайте новую проблему для начала.
             </div>
           </div>
-          <UButton
-            v-if="fromNodeForAlternative || toNodeForAlternative"
-            @click="resetAlternativeSelection"
-            color="neutral"
-            variant="ghost"
-            size="xs"
-            class="mt-2"
-          >
-            Сбросить выбор
-          </UButton>
-        </div>
+        </UCard>
 
-        <div class="mb-4">
-          <UTextarea
-            v-model="alternativeReason"
-            placeholder="Почему этот шаг трудно выполнить? (необязательно)"
-            :rows="2"
-            class="w-full"
-          />
-        </div>
-
-        <UButton
-          :loading="isLoading"
-          :disabled="!fromNodeForAlternative || !toNodeForAlternative"
-          @click="handleAddAlternativeSolution"
-          color="primary"
-          size="sm"
+        <div
+          v-if="selectedSkillNode || showAlternativePanel"
+          class="absolute top-16 right-1 w-[350px] z-10 flex flex-col gap-4"
         >
-          Добавить альтернативный путь
-        </UButton>
+          <AlternativePathPanel
+            v-if="showAlternativePanel"
+            :from-node="fromNodeForAlternative"
+            :to-node="toNodeForAlternative"
+            :reason="alternativeReason"
+            :is-loading="isLoading"
+            :can-submit="!!(fromNodeForAlternative && toNodeForAlternative)"
+            @reset-selection="resetAlternativeSelection"
+            @update:reason="value => (alternativeReason = value)"
+            @submit="handleAddAlternativeSolution"
+          />
+          <SkillDescription :selected-node="selectedSkillNode" />
+        </div>
       </div>
     </div>
   </div>

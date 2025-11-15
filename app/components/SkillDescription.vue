@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { SkillNode } from '~/types/skillTree'
+import { getScoreColorRgb } from '~/utils/colors'
 
 interface Props {
   selectedNode: SkillNode | null
@@ -9,7 +10,7 @@ defineProps<Props>()
 </script>
 
 <template>
-  <div v-if="selectedNode" class="fixed top-5 right-5 w-[350px] z-1000">
+  <div v-if="selectedNode" class="w-full">
     <UCard>
       <template #header>
         <div class="flex items-center gap-3">
