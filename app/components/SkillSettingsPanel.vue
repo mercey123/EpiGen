@@ -58,7 +58,7 @@ const handleReset = () => {
     <UButton
       class="fixed top-4 left-4 z-50"
       color="neutral"
-      variant="subtle"
+      variant="outline"
       :label="isOpen ? 'Close Settings' : 'Open Settings'"
       @click="isOpen = !isOpen"
     />

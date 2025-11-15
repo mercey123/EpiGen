@@ -1,6 +1,6 @@
 <template>
   <UApp>
-    <UHeader>
+    <UHeader :toggle="false">
       <template #left>
         <NuxtLink to="/" class="font-bold text-xl"> EpiGen </NuxtLink>
       </template>
