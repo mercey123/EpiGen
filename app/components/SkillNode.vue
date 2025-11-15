@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import * as d3 from 'd3'
 import type { SkillNode } from '~/types/skillTree'
-import { SKILL_NODE_CONSTANTS as SKILL } from '~/constants/skillTree'
+import {
+  SKILL_NODE_STYLES as STYLE,
+  SKILL_TREE_DEFAULT_SETTINGS as SETTINGS,
+  type SkillNodeSizing,
+} from '~/constants/skillTree'
 
 interface Props {
   node: d3.HierarchyPointNode<SkillNode>
@@ -9,9 +13,12 @@ interface Props {
   rectWidth?: number
   rectHeight?: number
   isDimmed?: boolean
+  sizing?: SkillNodeSizing
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  sizing: () => ({ ...SETTINGS.node }),
+})
 
 const emit = defineEmits<{
   click: [node: SkillNode]
@@ -19,25 +26,25 @@ const emit = defineEmits<{
 
 const textRef = ref<SVGTextElement | null>(null)
 const measuredSize = ref({
-  width: props.rectWidth ?? SKILL.dimensions.minWidth,
-  height: props.rectHeight ?? SKILL.dimensions.minHeight,
+  width: props.rectWidth ?? props.sizing.minWidth,
+  height: props.rectHeight ?? props.sizing.minHeight,
 })
 
 const computedRectWidth = computed(
   () =>
     props.rectWidth ??
-    Math.max(SKILL.dimensions.minWidth, measuredSize.value.width),
+    Math.max(props.sizing.minWidth, measuredSize.value.width),
 )
 
 const computedRectHeight = computed(
   () =>
     props.rectHeight ??
-    Math.max(SKILL.dimensions.minHeight, measuredSize.value.height),
+    Math.max(props.sizing.minHeight, measuredSize.value.height),
 )
 
 const nodeBackgroundFillStyle = computed(() => {
   if (props.isDimmed) {
-    return { '--fill-color': SKILL.colors.dimmedFill }
+    return { '--fill-color': STYLE.colors.dimmedFill }
   }
 
   const rgb = getScoreBackgroundColorRgb(props.nodeData.score)
@@ -46,7 +53,7 @@ const nodeBackgroundFillStyle = computed(() => {
 
 const nodeStrokeStyle = computed(() => {
   if (props.isDimmed) {
-    return { '--stroke-color': SKILL.colors.dimmedStroke }
+    return { '--stroke-color': STYLE.colors.dimmedStroke }
   }
 
   const rgb = getScoreColorRgb(props.nodeData.score)
@@ -58,15 +65,19 @@ const nodeTextClass = computed(() =>
 )
 
 const nodeExtraVisualClass = computed(() =>
-  props.isDimmed ? SKILL.opacityClasses.dimmed : SKILL.opacityClasses.active,
+  props.isDimmed ? STYLE.opacityClasses.dimmed : STYLE.opacityClasses.active,
 )
+
+const nodeTextStyle = computed(() => ({
+  fontSize: `${props.sizing.fontSize}px`,
+}))
 
 const measureLabel = () => {
   if (!textRef.value || props.rectWidth || props.rectHeight) return
   const bbox = textRef.value.getBBox()
   measuredSize.value = {
-    width: bbox.width + SKILL.dimensions.horizontalPadding,
-    height: bbox.height + SKILL.dimensions.verticalPadding,
+    width: bbox.width + props.sizing.horizontalPadding,
+    height: bbox.height + props.sizing.verticalPadding,
   }
 }
 
@@ -83,6 +94,18 @@ watch(
   () => {
     nextTick(() => measureLabel())
   },
+)
+
+watch(
+  () => props.sizing,
+  () => {
+    measuredSize.value = {
+      width: props.rectWidth ?? props.sizing.minWidth,
+      height: props.rectHeight ?? props.sizing.minHeight,
+    }
+    nextTick(() => measureLabel())
+  },
+  { deep: true },
 )
 </script>
 
@@ -111,7 +134,8 @@ watch(
       :y="0"
       text-anchor="middle"
       dominant-baseline="middle"
-      :class="['text-sm font-semibold pointer-events-none px-2', nodeTextClass]"
+      :class="['font-semibold pointer-events-none px-2', nodeTextClass]"
+      :style="nodeTextStyle"
     >
       {{ nodeData.label }}
     </text>
