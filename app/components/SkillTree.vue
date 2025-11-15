@@ -148,8 +148,154 @@ const buildCurvedLinkPath = (
   return `M ${sourceX} ${sourceY} C ${sourceX} ${midY}, ${targetX} ${midY}, ${targetX} ${targetY}`
 }
 
+const calculateNodeSize = (
+  label: string,
+  disableLabelClamp: boolean,
+): { width: number; height: number } => {
+  if (typeof document === 'undefined') {
+    return {
+      width: props.nodeSizing.minWidth,
+      height: props.nodeSizing.minHeight,
+    }
+  }
+
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  svg.style.position = 'absolute'
+  svg.style.visibility = 'hidden'
+  svg.style.width = '0'
+  svg.style.height = '0'
+  document.body.appendChild(svg)
+
+  const text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+  text.setAttribute('font-size', `${props.nodeSizing.fontSize}`)
+  text.setAttribute('font-family', 'sans-serif')
+  text.setAttribute('font-weight', '600')
+  text.textContent = label
+  svg.appendChild(text)
+
+  const bbox = text.getBBox()
+  document.body.removeChild(svg)
+
+  const widthWithPadding = bbox.width + props.nodeSizing.horizontalPadding
+  const heightWithPadding = bbox.height + props.nodeSizing.verticalPadding
+
+  const effectiveMaxWidth = Math.max(
+    disableLabelClamp ? Number.POSITIVE_INFINITY : props.nodeSizing.maxWidth,
+    props.nodeSizing.minWidth,
+  )
+
+  const clampedWidth = Math.min(
+    Math.max(props.nodeSizing.minWidth, widthWithPadding),
+    effectiveMaxWidth,
+  )
+
+  return {
+    width: clampedWidth,
+    height: Math.max(props.nodeSizing.minHeight, heightWithPadding),
+  }
+}
+
+const adjustNodePositionsByLevel = (
+  nodes: d3.HierarchyPointNode<SkillNode>[],
+  selectedNodeId: string | null | undefined,
+): void => {
+  const nodesByDepth = new Map<number, d3.HierarchyPointNode<SkillNode>[]>()
+  const nodeSizes = new Map<string, { width: number; height: number }>()
+
+  const nodesMap = new Map<string, d3.HierarchyPointNode<SkillNode>>()
+  nodes.forEach(node => {
+    nodesMap.set(node.data.id, node)
+  })
+
+  const getHighlightedIds = (): Set<string> => {
+    if (!selectedNodeId) return new Set<string>()
+
+    const reachableIds = new Set<string>([selectedNodeId])
+    const traverseParents = (nodeData?: SkillNode | null) => {
+      if (!nodeData?.parentIds) return
+      nodeData.parentIds.forEach(parentId => {
+        if (reachableIds.has(parentId)) return
+        reachableIds.add(parentId)
+        const parentNode = nodesMap.get(parentId)
+        traverseParents(parentNode?.data)
+      })
+    }
+
+    const selectedNode = nodesMap.get(selectedNodeId)
+    traverseParents(selectedNode?.data)
+
+    return reachableIds
+  }
+
+  const highlightedIdsSet = getHighlightedIds()
+
+  nodes.forEach(node => {
+    if (node.data.hidden) return
+
+    const depth = node.depth ?? 0
+    if (!nodesByDepth.has(depth)) {
+      nodesByDepth.set(depth, [])
+    }
+    nodesByDepth.get(depth)!.push(node)
+
+    const isInSelectedBranch = selectedNodeId
+      ? highlightedIdsSet.has(node.data.id)
+      : false
+    const size = calculateNodeSize(node.data.label, isInSelectedBranch)
+    nodeSizes.set(node.data.id, size)
+  })
+
+  nodesByDepth.forEach((levelNodes, depth) => {
+    if (levelNodes.length === 0) return
+
+    levelNodes.sort((a, b) => {
+      if (a.x !== b.x) return a.x - b.x
+      return a.y - b.y
+    })
+
+    const firstNode = levelNodes[0]
+    if (!firstNode) return
+
+    const levelY = firstNode.y
+    let currentX = 0
+
+    levelNodes.forEach((node, index) => {
+      const size = nodeSizes.get(node.data.id) || {
+        width: props.nodeSizing.minWidth,
+        height: props.nodeSizing.minHeight,
+      }
+
+      if (index === 0) {
+        node.x = currentX + size.width / 2
+        node.y = levelY
+        currentX += size.width
+      } else {
+        const prevNode = levelNodes[index - 1]
+        if (!prevNode) return
+
+        const prevSize = nodeSizes.get(prevNode.data.id) || {
+          width: props.nodeSizing.minWidth,
+          height: props.nodeSizing.minHeight,
+        }
+
+        currentX += props.horizontalGap
+        node.x = currentX + size.width / 2
+        node.y = levelY
+        currentX += size.width
+      }
+    })
+
+    const totalWidth = currentX
+    const centerOffset = (props.width - totalWidth) / 2
+    levelNodes.forEach(node => {
+      node.x += centerOffset
+    })
+  })
+}
+
 const buildTreeLayout = () => {
   if (!props.skills || props.skills.length === 0) return
+  if (typeof document === 'undefined') return
 
   const hierarchy = d3
     .stratify<SkillNode>()
@@ -179,6 +325,8 @@ const buildTreeLayout = () => {
     node.x += offsetX
     node.y += offsetY
   })
+
+  adjustNodePositionsByLevel(nodes, props.selectedNodeId)
 
   treeNodes.value = nodes
   treeLinks.value = links
@@ -339,6 +487,8 @@ watch(
     () => props.height,
     () => props.verticalGap,
     () => props.horizontalGap,
+    () => props.selectedNodeId,
+    () => props.nodeSizing,
   ],
   () => {
     applyViewportDimensions()
