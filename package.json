@@ -1,0 +1,42 @@
+{
+  "name": "giveget",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "typecheck": "nuxt typecheck",
+    "format": "npx prettier -w ."
+  },
+  "dependencies": {
+    "@nuxt/eslint": "^0.4.0",
+    "@nuxt/ui": "^4.0.0",
+    "h3": "^1.15.4",
+    "nuxt": "^4.1.2"
+  },
+  "devDependencies": {
+    "@nuxt/eslint-config": "^0.4.0",
+    "@types/node": "^24.5.2",
+    "eslint": "^9.36.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.6.2",
+    "vue-tsc": "^3.0.8"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{vue,ts,js}": [
+      "oxlint"
+    ]
+  },
+  "engines": {
+    "node": ">=20.18.0"
+  },
+  "packageManager": "pnpm@10.15.0+sha1.8e43a0b959a228ea479539575a66f5eafc89023a"
+}
