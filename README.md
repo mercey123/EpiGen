@@ -1,60 +1,148 @@
-# Nuxt Starter Template
+# API Documentation
 
-[![Nuxt UI](https://img.shields.io/badge/Made%20with-Nuxt%20UI-00DC82?logo=nuxt&labelColor=020420)](https://ui.nuxt.com)
+## Environment Variables
 
-Use this template to get started with [Nuxt UI](https://ui.nuxt.com) quickly.
+Create a `.env` file in the root directory:
 
-- [Live demo](https://starter-template.nuxt.dev/)
-- [Documentation](https://ui.nuxt.com/docs/getting-started/installation/nuxt)
-
-<a href="https://starter-template.nuxt.dev/" target="_blank">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://ui.nuxt.com/assets/templates/nuxt/starter-dark.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://ui.nuxt.com/assets/templates/nuxt/starter-light.png">
-    <img alt="Nuxt Starter Template" src="https://ui.nuxt.com/assets/templates/nuxt/starter-light.png">
-  </picture>
-</a>
-
-> The starter template for Vue is on https://github.com/nuxt-ui-templates/starter-vue.
-
-## Quick Start
-
-```bash [Terminal]
-npm create nuxt@latest -- -t github:nuxt-ui-templates/starter
+```env
+AI_API_KEY=your_gemini_api_key_here
+AI_MODEL=gemini-pro
 ```
 
-## Deploy your own
+Or use:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-name=starter&repository-url=https%3A%2F%2Fgithub.com%2Fnuxt-ui-templates%2Fstarter&demo-image=https%3A%2F%2Fui.nuxt.com%2Fassets%2Ftemplates%2Fnuxt%2Fstarter-dark.png&demo-url=https%3A%2F%2Fstarter-template.nuxt.dev%2F&demo-title=Nuxt%20Starter%20Template&demo-description=A%20minimal%20template%20to%20get%20started%20with%20Nuxt%20UI.)
-
-## Setup
-
-Make sure to install the dependencies:
-
-```bash
-pnpm install
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
+AI_MODEL=gemini-pro
 ```
 
-## Development Server
+Get your API key from [Google AI Studio](https://ai.google.com/studio)
 
-Start the development server on `http://localhost:3000`:
+## Endpoints
 
-```bash
-pnpm dev
+### 1. Create Problem
+
+**POST** `/api/problems/create`
+
+Создает новую проблему или возвращает ссылку на существующую.
+
+**Request Body:**
+
+```json
+{
+  "description": "Молодые люди испытывают финансовый стресс из-за отсутствия финансовой грамотности",
+  "tags": ["финансовая грамотность", "молодежь", "стресс"]
+}
 ```
 
-## Production
+**Response:**
 
-Build the application for production:
-
-```bash
-pnpm build
+```json
+{
+  "existingTreeId": "tree_1234567890_abc" // если найдена похожая проблема
+}
 ```
 
-Locally preview production build:
+или
 
-```bash
-pnpm preview
+```json
+{
+  "newTree": {
+    "id": "tree_1234567890_abc",
+    "rootNodeId": "node_root_123",
+    "nodes": [...],
+    "edges": [...],
+    "createdAt": "2025-01-20T10:00:00.000Z",
+    "updatedAt": "2025-01-20T10:00:00.000Z"
+  }
+}
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+### 2. Find Alternative Solution
+
+**POST** `/api/solutions/alternative`
+
+Генерирует альтернативное решение для существующей ноды.
+
+**Request Body:**
+
+```json
+{
+  "nodeId": "node_solution_123",
+  "treeId": "tree_1234567890_abc",
+  "reason": "Все существующие решения не подходят пользователю"
+}
+```
+
+**Response:**
+
+```json
+{
+  "tree": {
+    "id": "tree_1234567890_abc",
+    "nodes": [...],
+    "edges": [...]
+  },
+  "newNodeId": "node_solution_456",
+  "newEdgeId": "edge_789"
+}
+```
+
+### 3. Search
+
+**POST** `/api/search`
+
+Поиск по описанию и тэгам.
+
+**Request Body:**
+
+```json
+{
+  "description": "финансовая грамотность",
+  "tags": ["молодежь"],
+  "limit": 10
+}
+```
+
+**Response:**
+
+```json
+{
+  "nodes": [
+    {
+      "id": "node_123",
+      "type": "problem",
+      "title": "...",
+      "description": "...",
+      "tags": [...]
+    }
+  ],
+  "trees": [
+    {
+      "id": "tree_123",
+      "rootNodeId": "node_root",
+      "nodes": [...],
+      "edges": [...]
+    }
+  ]
+}
+```
+
+### 4. Get Tree
+
+**GET** `/api/trees/:id`
+
+Получить дерево решений по ID.
+
+**Response:**
+
+```json
+{
+  "id": "tree_1234567890_abc",
+  "rootNodeId": "node_root_123",
+  "nodes": [...],
+  "edges": [...],
+  "createdAt": "2025-01-20T10:00:00.000Z",
+  "updatedAt": "2025-01-20T10:00:00.000Z"
+}
+```
