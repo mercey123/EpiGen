@@ -1,16 +1,31 @@
 <script setup lang="ts">
 import * as d3 from 'd3'
 import type { SkillNode } from '~/types/skillTree'
-import { SKILL_TREE_CONSTANTS } from '~/constants/skillTree'
+import {
+  SKILL_TREE_CONSTANTS,
+  SKILL_TREE_DEFAULT_SETTINGS as SETTINGS,
+  type SkillNodeSizing,
+} from '~/constants/skillTree'
+import { getScoreColorRgb } from '~/utils/colors'
 
 interface Props {
   skills: SkillNode[]
-  width: number
-  height: number
+  width?: number
+  height?: number
   selectedNodeId?: string | null
+  verticalGap?: number
+  horizontalGap?: number
+  nodeSizing?: SkillNodeSizing
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  width: SETTINGS.viewport.width,
+  height: SETTINGS.viewport.height,
+  selectedNodeId: null,
+  verticalGap: SETTINGS.layout.verticalGap,
+  horizontalGap: SETTINGS.layout.horizontalGap,
+  nodeSizing: () => ({ ...SETTINGS.node }),
+})
 
 const emit = defineEmits<{
   nodeClick: [node: SkillNode]
@@ -34,6 +49,7 @@ const mergeLinks = ref<
   }>
 >([])
 const nodesById = ref(new Map<string, d3.HierarchyPointNode<SkillNode>>())
+const nodeSizing = computed(() => props.nodeSizing)
 
 const highlightedIds = computed(() => {
   if (!props.selectedNodeId) {
@@ -117,11 +133,27 @@ const buildTreeLayout = () => {
       return null
     })(props.skills)
 
-  const treeLayout = d3.tree<SkillNode>().size([props.width, props.height])
+  const treeLayout = d3
+    .tree<SkillNode>()
+    .nodeSize([props.horizontalGap, props.verticalGap])
+
   const root = treeLayout(hierarchy)
 
-  treeNodes.value = root.descendants()
-  treeLinks.value = root.links()
+  const nodes = root.descendants()
+  const links = root.links()
+
+  const minX = Math.min(...nodes.map(node => node.x))
+  const minY = Math.min(...nodes.map(node => node.y))
+  const offsetX = props.horizontalGap - minX
+  const offsetY = props.verticalGap - minY
+
+  nodes.forEach(node => {
+    node.x += offsetX
+    node.y += offsetY
+  })
+
+  treeNodes.value = nodes
+  treeLinks.value = links
 
   const latestNodeMap = new Map<string, d3.HierarchyPointNode<SkillNode>>()
   treeNodes.value.forEach(node => {
@@ -255,16 +287,17 @@ const handlePointerMove = (event: PointerEvent) => {
   )
 }
 
+const applyViewportDimensions = () => {
+  if (!svgRef.value) return
+  svgRef.value.setAttribute('width', '100%')
+  svgRef.value.setAttribute('height', `${props.height}`)
+  svgRef.value.setAttribute('viewBox', `0 0 ${props.width} ${props.height}`)
+}
+
 onMounted(() => {
   if (!svgRef.value) return
 
-  svgRef.value.setAttribute('width', '100%')
-  svgRef.value.setAttribute('height', `${props.height}`)
-
-  const svgWidth = svgRef.value.clientWidth || props.width
-  const svgHeight = svgRef.value.clientHeight || props.height
-  svgRef.value.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`)
-
+  applyViewportDimensions()
   buildTreeLayout()
 })
 
@@ -275,6 +308,19 @@ watch(
   },
   { deep: true },
 )
+
+watch(
+  [
+    () => props.width,
+    () => props.height,
+    () => props.verticalGap,
+    () => props.horizontalGap,
+  ],
+  () => {
+    applyViewportDimensions()
+    buildTreeLayout()
+  },
+)
 </script>
 
 <template>
@@ -283,7 +329,7 @@ watch(
       ref="svgRef"
       :class="['w-full', isPanning ? 'cursor-grabbing' : 'cursor-grab']"
       @pointerdown="handlePointerDown"
-      @pointercancel="handlePointerDown"
+      @pointercancel="handlePointerUp"
       @pointerup="handlePointerUp"
       @pointerleave="handlePointerUp"
       @pointermove="handlePointerMove"
@@ -317,6 +363,7 @@ watch(
             :node="node"
             :node-data="node.data"
             :is-dimmed="isNodeDimmed(node)"
+            :sizing="nodeSizing"
             @click="handleNodeClick"
           />
         </g>

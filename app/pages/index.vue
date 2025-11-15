@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import type { SkillNode } from '~/types/skillTree'
 import { allDecisionTreesToSkillNodes } from '~/utils/decisionTreeToSkillTree'
+import {
+  SKILL_TREE_DEFAULT_SETTINGS as SETTINGS,
+  type SkillTreeSettings,
+} from '~/constants/skillTree'
 
 const { createProblem, getAllTrees, findAlternativeSolution } =
   useDecisionTree()
@@ -11,6 +15,9 @@ const isLoadingTrees = ref(true)
 
 const allSkillNodes = computed(() => {
   return allDecisionTreesToSkillNodes(decisionTrees.value)
+})
+const skillTreeSettings = useCookie<SkillTreeSettings>('skillTreeSettings', {
+  default: () => JSON.parse(JSON.stringify(SETTINGS)),
 })
 
 const problemDescription = ref('')
@@ -145,6 +152,8 @@ const handleAddAlternativeSolution = async () => {
 
 <template>
   <div class="min-h-screen bg-gray-50">
+    <SkillSettingsPanel v-model="skillTreeSettings" />
+
     <div class="container mx-auto px-4 py-8">
       <h1 class="text-3xl font-bold mb-8">EpiGen - Деревья решений</h1>
 
@@ -225,7 +234,8 @@ const handleAddAlternativeSolution = async () => {
         <div class="w-full h-full bg-white">
           <div
             v-if="isLoadingTrees"
-            class="flex items-center justify-center h-[831px]"
+            class="flex items-center justify-center"
+            :style="{ height: `${skillTreeSettings.viewport.height}px` }"
           >
             <div class="text-gray-400">Загрузка деревьев...</div>
           </div>
@@ -233,14 +243,18 @@ const handleAddAlternativeSolution = async () => {
             v-else-if="allSkillNodes.length > 0"
             :skills="allSkillNodes"
             :selected-node-id="selectedSkillNode?.id ?? null"
-            :width="1281"
-            :height="831"
+            :width="skillTreeSettings.viewport.width"
+            :height="skillTreeSettings.viewport.height"
+            :vertical-gap="skillTreeSettings.layout.verticalGap"
+            :horizontal-gap="skillTreeSettings.layout.horizontalGap"
+            :node-sizing="skillTreeSettings.node"
             @node-click="handleSkillNodeClick"
             @background-click="handleBackgroundClick"
           />
           <div
             v-else
-            class="flex items-center justify-center h-[831px] text-gray-400"
+            class="flex items-center justify-center text-gray-400"
+            :style="{ height: `${skillTreeSettings.viewport.height}px` }"
           >
             Нет деревьев. Создайте новую проблему для начала.
           </div>
