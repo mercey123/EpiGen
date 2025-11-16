@@ -24,6 +24,7 @@ const isLoading = ref(false)
 const isTreeFullscreen = ref(false)
 const alternativeReason = ref('')
 const previousScrollY = ref(0)
+const decisionTreeRef = ref<HTMLElement | null>(null)
 const fullscreenViewportHeight = ref(
   skillTreeSettings.value.viewport.height ?? 600,
 )
@@ -167,6 +168,22 @@ const toggleTreeFullscreen = async () => {
   }
 }
 
+const scrollToDecisionTree = () => {
+  if (typeof window === 'undefined' || !decisionTreeRef.value) return
+
+  nextTick(() => {
+    decisionTreeRef.value?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  })
+}
+
+const handleNewTreeCreated = (newTree: DecisionTree) => {
+  currentTree.value = newTree
+  scrollToDecisionTree()
+}
+
 const handleAddAlternativeSolution = async () => {
   if (!isAlternativeModeActive.value) {
     toast.add({
@@ -293,11 +310,12 @@ const handleAddAlternativeSolution = async () => {
     </div>
 
     <NewProblemForm
-      @decision-trees="(newTree: DecisionTree) => (currentTree = newTree)"
+      @decision-trees="handleNewTreeCreated"
       @load-all-trees="loadLatestTree"
     />
 
     <div
+      ref="decisionTreeRef"
       :class="[
         isTreeFullscreen
           ? 'fixed inset-0 z-50 bg-default/95 backdrop-blur-sm overflow-auto p-4'
