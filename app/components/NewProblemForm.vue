@@ -151,8 +151,9 @@ const handleCreateProblem = async () => {
 
       <UButton
         size="lg"
+        class="cursor-pointer"
         :ui="{
-          base: 'px-4 py-2 bg-gradient-to-r from-sky-400 via-indigo-400 to-fuchsia-500 hover:opacity-75 disabled:opacity-50',
+          base: 'px-4 py-2 bg-gradient-to-r from-sky-400 via-indigo-400 to-fuchsia-500 hover:opacity-90 disabled:opacity-50',
           leadingIcon: 'size-4',
         }"
         icon="i-lucide-sparkles"
