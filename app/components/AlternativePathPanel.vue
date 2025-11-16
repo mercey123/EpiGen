@@ -22,11 +22,9 @@ const emit = defineEmits<{
 <template>
   <div class="bg-white rounded-lg shadow p-6 w-full space-y-4">
     <div class="flex items-start justify-between gap-3">
-      <h3 class="font-semibold text-base leading-6">
-        Добавить альтернативный путь
-      </h3>
+      <h3 class="font-semibold text-base leading-6">Add alternative path</h3>
       <UButton
-        label="Выйти"
+        label="Exit"
         size="xs"
         variant="ghost"
         color="neutral"
@@ -36,29 +34,28 @@ const emit = defineEmits<{
 
     <div>
       <p class="text-sm text-gray-600 mb-2">
-        Выберите две связанные ноды для создания альтернативного пути между
-        ними:
+        Select two connected nodes to create an alternative path between them:
       </p>
       <div class="space-y-2">
         <div class="flex items-center gap-2">
-          <span class="text-sm font-medium text-gray-700">От:</span>
+          <span class="text-sm font-medium text-gray-700">From:</span>
           <UBadge
             v-if="props.fromNode?.label"
             size="sm"
             color="secondary"
             :label="props.fromNode.label"
           />
-          <span v-else class="text-sm text-gray-400">Не выбрано</span>
+          <span v-else class="text-sm text-gray-400">Not selected</span>
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-sm font-medium text-gray-700">До:</span>
+          <span class="text-sm font-medium text-gray-700">To:</span>
           <UBadge
             v-if="props.toNode?.label"
             size="sm"
             color="primary"
             :label="props.toNode.label"
           />
-          <span v-else class="text-sm text-gray-400">Не выбрано</span>
+          <span v-else class="text-sm text-gray-400">Not selected</span>
         </div>
       </div>
       <UButton
@@ -68,14 +65,14 @@ const emit = defineEmits<{
         variant="soft"
         size="xs"
         class="mt-2"
-        label="Сбросить выбор"
+        label="Reset selection"
       />
     </div>
 
     <div>
       <UTextarea
         :model-value="props.reason"
-        placeholder="Почему этот шаг трудно выполнить?"
+        placeholder="Why is this step difficult?"
         :rows="2"
         class="w-full"
         @update:model-value="value => emit('update:reason', value)"
@@ -90,14 +87,14 @@ const emit = defineEmits<{
         :color="props.canSubmit ? 'primary' : 'neutral'"
         size="sm"
         class="w-full"
-        label="Добавить альтернативный путь"
+        label="Add alternative path"
       />
       <UButton
         color="error"
         variant="soft"
         size="xs"
         class="self-start"
-        label="Завершить режим добавления"
+        label="Exit alternative mode"
         @click="emit('exit')"
       />
     </div>

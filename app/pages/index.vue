@@ -261,7 +261,7 @@ const handleAddAlternativeSolution = async () => {
         <template #header>
           <div class="flex justify-between items-center">
             <h2 class="text-xl font-semibold">
-              Деревья решений ({{ decisionTrees.length }})
+              Decision Trees ({{ decisionTrees.length }})
             </h2>
             <UButton
               :loading="isLoadingTrees"
@@ -270,7 +270,7 @@ const handleAddAlternativeSolution = async () => {
               variant="ghost"
               size="sm"
             >
-              Обновить
+              Refresh
             </UButton>
           </div>
         </template>
@@ -280,7 +280,7 @@ const handleAddAlternativeSolution = async () => {
             class="flex items-center justify-center"
             :style="{ height: `${skillTreeSettings.viewport.height}px` }"
           >
-            <div class="text-gray-400">Загрузка деревьев...</div>
+            <div class="text-gray-400">Loading trees...</div>
           </div>
           <SkillTree
             v-else-if="allSkillNodes.length > 0"
@@ -303,7 +303,7 @@ const handleAddAlternativeSolution = async () => {
             class="flex items-center justify-center text-gray-400"
             :style="{ height: `${skillTreeSettings.viewport.height}px` }"
           >
-            Нет деревьев. Создайте новую проблему для начала.
+            No trees yet. Create a problem to get started.
           </div>
         </div>
       </UCard>
@@ -330,7 +330,7 @@ const handleAddAlternativeSolution = async () => {
           color="primary"
           size="sm"
           class="w-full"
-          label="Активировать альтернативный путь"
+          label="Enable alternative path mode"
           @click="activateAlternativeMode"
         />
         <SkillDescription
