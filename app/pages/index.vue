@@ -310,7 +310,7 @@ const handleAddAlternativeSolution = async () => {
 
       <div
         v-if="shouldShowSidebar"
-        class="absolute top-16 right-1 w-[350px] z-10 flex flex-col gap-4"
+        class="absolute top-16 right-1 w-[350px] z-10 flex flex-col items-end gap-4"
       >
         <template v-if="isAlternativeModeActive">
           <AlternativePathPanel
@@ -329,7 +329,7 @@ const handleAddAlternativeSolution = async () => {
           v-else-if="hasDecisionTrees"
           color="primary"
           size="sm"
-          class="w-full"
+          class="w-fit"
           label="Enable alternative path mode"
           @click="activateAlternativeMode"
         />

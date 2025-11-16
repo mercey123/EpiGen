@@ -43,7 +43,7 @@ export function allDecisionTreesToSkillNodes(
     id: rootNodeId,
     label: 'EpiGen Trees',
     parentIds: undefined,
-    descriptions: ['Корневой узел для всех деревьев решений'],
+    descriptions: ['Root node for every decision tree'],
     score: 0,
     hidden: true,
   })
