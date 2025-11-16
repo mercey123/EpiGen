@@ -502,6 +502,79 @@ watch(
     buildTreeLayout()
   },
 )
+
+const isDarkMode = ref(false)
+
+const updateDarkMode = () => {
+  if (typeof window === 'undefined') return
+  isDarkMode.value = document.documentElement.classList.contains('dark')
+}
+
+onMounted(() => {
+  updateDarkMode()
+  if (typeof window !== 'undefined') {
+    const observer = new MutationObserver(updateDarkMode)
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
+    onBeforeUnmount(() => observer.disconnect())
+  }
+})
+
+const dotPatternId = computed(() =>
+  isDarkMode.value ? 'dot-pattern-dark' : 'dot-pattern',
+)
+
+const backgroundBounds = computed(() => {
+  const largeSize = 50000
+  const halfSize = largeSize / 2
+
+  if (treeNodes.value.length === 0) {
+    return {
+      x: -halfSize,
+      y: -halfSize,
+      width: largeSize,
+      height: largeSize,
+    }
+  }
+
+  const nodes = treeNodes.value.filter(node => !node.data.hidden)
+  if (nodes.length === 0) {
+    return {
+      x: -halfSize,
+      y: -halfSize,
+      width: largeSize,
+      height: largeSize,
+    }
+  }
+
+  let minX = Infinity
+  let minY = Infinity
+  let maxX = -Infinity
+  let maxY = -Infinity
+
+  nodes.forEach(node => {
+    const size = calculateNodeSize(node.data.label, false)
+    const halfWidth = size.width / 2
+    const halfHeight = size.height / 2
+
+    minX = Math.min(minX, node.x - halfWidth)
+    minY = Math.min(minY, node.y - halfHeight)
+    maxX = Math.max(maxX, node.x + halfWidth)
+    maxY = Math.max(maxY, node.y + halfHeight)
+  })
+
+  const centerX = (minX + maxX) / 2
+  const centerY = (minY + maxY) / 2
+
+  return {
+    x: centerX - halfSize,
+    y: centerY - halfSize,
+    width: largeSize,
+    height: largeSize,
+  }
+})
 </script>
 
 <template>
@@ -516,6 +589,36 @@ watch(
       @pointermove="handlePointerMove"
       @click="handleBackgroundClick"
     >
+      <defs>
+        <pattern
+          id="dot-pattern"
+          x="0"
+          y="0"
+          width="20"
+          height="20"
+          patternUnits="userSpaceOnUse"
+        >
+          <circle cx="10" cy="10" r="1.5" fill="#cbd5e1" />
+        </pattern>
+        <pattern
+          id="dot-pattern-dark"
+          x="0"
+          y="0"
+          width="20"
+          height="20"
+          patternUnits="userSpaceOnUse"
+        >
+          <circle cx="10" cy="10" r="1.5" fill="#374151" />
+        </pattern>
+      </defs>
+      <rect
+        :x="backgroundBounds.x"
+        :y="backgroundBounds.y"
+        :width="backgroundBounds.width"
+        :height="backgroundBounds.height"
+        :fill="`url(#${dotPatternId})`"
+        class="pointer-events-none"
+      />
       <g>
         <g class="links">
           <path
