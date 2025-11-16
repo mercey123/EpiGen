@@ -7,18 +7,18 @@ export const apiExamples = {
       },
       body: JSON.stringify({
         description:
-          'Молодые люди испытывают финансовый стресс из-за отсутствия финансовой грамотности',
-        tags: ['финансовая грамотность', 'молодежь', 'стресс'],
+          'Young people experience financial stress because they lack financial literacy',
+        tags: ['financial literacy', 'youth', 'stress'],
       }),
     })
 
     const data = await response.json()
 
     if (data.existingTreeId) {
-      console.log('Найдена существующая проблема:', data.existingTreeId)
+      console.log('Found an existing problem:', data.existingTreeId)
       return data.existingTreeId
     } else if (data.newTree) {
-      console.log('Создано новое дерево решений:', data.newTree.id)
+      console.log('Created a new decision tree:', data.newTree.id)
       return data.newTree
     }
   },
@@ -32,12 +32,12 @@ export const apiExamples = {
       body: JSON.stringify({
         nodeId,
         treeId,
-        reason: 'Все существующие решения не подходят пользователю',
+        reason: 'None of the existing solutions work for the user',
       }),
     })
 
     const data = await response.json()
-    console.log('Добавлено новое решение:', data.newNodeId)
+    console.log('Added a new solution:', data.newNodeId)
     return data
   },
 
@@ -55,15 +55,15 @@ export const apiExamples = {
     })
 
     const data = await response.json()
-    console.log('Найдено деревьев:', data.trees.length)
-    console.log('Найдено нод:', data.nodes.length)
+    console.log('Trees found:', data.trees.length)
+    console.log('Nodes found:', data.nodes.length)
     return data
   },
 
   getTree: async (treeId: string) => {
     const response = await fetch(`/api/trees/${treeId}`)
     const tree = await response.json()
-    console.log('Дерево решений:', tree.id)
+    console.log('Decision tree:', tree.id)
     return tree
   },
 }

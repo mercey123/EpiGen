@@ -32,7 +32,7 @@ const handleCreateProblem = async () => {
 
   if (!title) {
     toast.add({
-      title: 'Заполните название проблемы',
+      title: 'Enter a problem title',
       color: 'warning',
     })
     return
@@ -49,8 +49,8 @@ const handleCreateProblem = async () => {
 
     if (response.existingTreeId) {
       toast.add({
-        title: 'Найдена похожая проблема',
-        description: `Дерево: ${response.existingTreeId}`,
+        title: 'Similar problem found',
+        description: `Tree: ${response.existingTreeId}`,
         color: 'warning',
       })
       emit('loadAllTrees')
@@ -62,8 +62,8 @@ const handleCreateProblem = async () => {
     }
   } catch (e: any) {
     toast.add({
-      title: 'Не удалось создать проблему',
-      description: e?.message || 'Попробуйте ещё раз позже',
+      title: 'Could not create problem',
+      description: e?.message || 'Please try again later',
       color: 'error',
     })
   } finally {

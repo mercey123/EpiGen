@@ -1,8 +1,8 @@
 export interface SkillNode {
   id: string
   label: string
-  parentIds?: string[] // Массив родительских узлов (может быть несколько родителей)
-  descriptions?: string[] // Список описаний навыка
-  score?: number // Оценка для определения цвета ноды (0-100)
-  hidden?: boolean // Скрывать ли узел при отображении
+  parentIds?: string[] // Array of parent nodes (multiple parents allowed)
+  descriptions?: string[] // List of skill descriptions
+  score?: number // Score used to determine node color (0-100)
+  hidden?: boolean // Whether to hide the node when rendering
 }

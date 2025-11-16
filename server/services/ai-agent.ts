@@ -203,7 +203,7 @@ Based on research from digiconsumers.fi publications, especially focusing on Met
         id: `edge_${Date.now()}_${index}`,
         fromNodeId: previousNodeId,
         toNodeId: stepNode.id,
-        description: `Шаг ${index + 1}`,
+        description: `Step ${index + 1}`,
         rating: 0,
         ratingCount: 0,
       })
@@ -214,7 +214,7 @@ Based on research from digiconsumers.fi publications, especially focusing on Met
       id: `edge_${Date.now()}_${stepNodes.length}`,
       fromNodeId: previousNodeId,
       toNodeId: goalNode.id,
-      description: 'Достижение цели',
+      description: 'Goal achieved',
       rating: 0,
       ratingCount: 0,
     })
@@ -357,7 +357,7 @@ Based on research from digiconsumers.fi publications, especially Mette Ranta's w
       id: `edge_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       fromNodeId: request.fromNodeId,
       toNodeId: newNode.id,
-      description: 'Альтернативный путь',
+      description: 'Alternative path',
       rating: 0,
       ratingCount: 0,
     }
@@ -367,7 +367,7 @@ Based on research from digiconsumers.fi publications, especially Mette Ranta's w
         id: `edge_${Date.now()}_${index}_${Math.random().toString(36).substr(2, 9)}`,
         fromNodeId: newNode.id,
         toNodeId: targetNode.id,
-        description: 'Продолжение альтернативного пути',
+        description: 'Continuation of the alternative path',
         rating: 0,
         ratingCount: 0,
       }),

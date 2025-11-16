@@ -24,14 +24,14 @@ Get your API key from [Google AI Studio](https://ai.google.com/studio)
 
 **POST** `/api/problems/create`
 
-Создает новую проблему или возвращает ссылку на существующую.
+Creates a new problem or returns a reference to an existing one.
 
 **Request Body:**
 
 ```json
 {
-  "description": "Молодые люди испытывают финансовый стресс из-за отсутствия финансовой грамотности",
-  "tags": ["финансовая грамотность", "молодежь", "стресс"]
+  "description": "Young people experience financial stress due to a lack of financial literacy",
+  "tags": ["financial literacy", "youth", "stress"]
 }
 ```
 
@@ -39,11 +39,11 @@ Get your API key from [Google AI Studio](https://ai.google.com/studio)
 
 ```json
 {
-  "existingTreeId": "tree_1234567890_abc" // если найдена похожая проблема
+  "existingTreeId": "tree_1234567890_abc" // if a similar problem is found
 }
 ```
 
-или
+or
 
 ```json
 {
@@ -62,7 +62,7 @@ Get your API key from [Google AI Studio](https://ai.google.com/studio)
 
 **POST** `/api/solutions/alternative`
 
-Генерирует альтернативное решение для существующей ноды.
+Generates an alternative solution for an existing node.
 
 **Request Body:**
 
@@ -70,7 +70,7 @@ Get your API key from [Google AI Studio](https://ai.google.com/studio)
 {
   "nodeId": "node_solution_123",
   "treeId": "tree_1234567890_abc",
-  "reason": "Все существующие решения не подходят пользователю"
+  "reason": "None of the existing solutions work for the user"
 }
 ```
 
@@ -92,14 +92,14 @@ Get your API key from [Google AI Studio](https://ai.google.com/studio)
 
 **POST** `/api/search`
 
-Поиск по описанию и тэгам.
+Search by description and tags.
 
 **Request Body:**
 
 ```json
 {
-  "description": "финансовая грамотность",
-  "tags": ["молодежь"],
+  "description": "financial literacy",
+  "tags": ["youth"],
   "limit": 10
 }
 ```
@@ -132,7 +132,7 @@ Get your API key from [Google AI Studio](https://ai.google.com/studio)
 
 **GET** `/api/trees/:id`
 
-Получить дерево решений по ID.
+Retrieve a decision tree by ID.
 
 **Response:**
 
