@@ -11,8 +11,44 @@ export function decisionTreeToSkillNodes(tree: DecisionTree): SkillNode[] {
     nodeToParents.get(edge.toNodeId)!.push(edge.fromNodeId)
   })
 
+  const nodeDepths = new Map<string, number>()
+  const calculateDepth = (nodeId: string): number => {
+    if (nodeDepths.has(nodeId)) {
+      return nodeDepths.get(nodeId)!
+    }
+
+    const parents = nodeToParents.get(nodeId) || []
+    if (parents.length === 0) {
+      nodeDepths.set(nodeId, 0)
+      return 0
+    }
+
+    const maxParentDepth = Math.max(...parents.map(calculateDepth))
+    const depth = maxParentDepth + 1
+    nodeDepths.set(nodeId, depth)
+    return depth
+  }
+
+  tree.nodes.forEach(node => {
+    calculateDepth(node.id)
+  })
+
+  const maxDepth = Math.max(...Array.from(nodeDepths.values()))
+
   tree.nodes.forEach(node => {
     const parentIds = nodeToParents.get(node.id) || []
+    const depth = nodeDepths.get(node.id) || 0
+
+    let score: number
+    if (node.type === 'problem') {
+      score = 0
+    } else {
+      if (maxDepth === 0) {
+        score = 100
+      } else {
+        score = Math.round((depth / maxDepth) * 100)
+      }
+    }
 
     skillNodes.push({
       id: `${tree.id}-${node.id}`,
@@ -22,7 +58,7 @@ export function decisionTreeToSkillNodes(tree: DecisionTree): SkillNode[] {
           ? undefined
           : parentIds.map(pid => `${tree.id}-${pid}`),
       descriptions: [node.description],
-      score: node.type === 'problem' ? 50 : node.type === 'solution' ? 75 : 100,
+      score,
     })
   })
 
