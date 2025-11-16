@@ -60,7 +60,7 @@ watch(
 
     <div
       v-if="isOpen"
-      class="fixed top-16 right-4 w-80 z-50 bg-white rounded-xl shadow-lg border p-4 space-y-4 max-h-[80vh] overflow-y-auto"
+      class="fixed top-16 right-4 w-80 z-50 bg-default rounded-xl shadow-lg border border-muted p-4 space-y-4 max-h-[80vh] overflow-y-auto"
     >
       <div class="flex items-center justify-between gap-2">
         <h3 class="text-base font-semibold">Skill Tree Settings</h3>
@@ -73,11 +73,11 @@ watch(
       </div>
 
       <section>
-        <h4 class="text-xs uppercase tracking-wide text-gray-500 mb-2">
+        <h4 class="text-xs uppercase tracking-wide text-muted mb-2">
           Viewport
         </h4>
         <div class="grid grid-cols-2 gap-3">
-          <label class="text-xs font-medium text-gray-600 flex flex-col gap-1">
+          <label class="text-xs font-medium text-toned flex flex-col gap-1">
             Width
             <input
               v-model.number="localSettings.viewport.width"
@@ -86,7 +86,7 @@ watch(
               class="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring"
             />
           </label>
-          <label class="text-xs font-medium text-gray-600 flex flex-col gap-1">
+          <label class="text-xs font-medium text-toned flex flex-col gap-1">
             Height
             <input
               v-model.number="localSettings.viewport.height"
@@ -99,11 +99,9 @@ watch(
       </section>
 
       <section>
-        <h4 class="text-xs uppercase tracking-wide text-gray-500 mb-2">
-          Layout
-        </h4>
+        <h4 class="text-xs uppercase tracking-wide text-muted mb-2">Layout</h4>
         <div class="grid grid-cols-2 gap-3">
-          <label class="text-xs font-medium text-gray-600 flex flex-col gap-1">
+          <label class="text-xs font-medium text-toned flex flex-col gap-1">
             Vertical Gap
             <input
               v-model.number="localSettings.layout.verticalGap"
@@ -112,7 +110,7 @@ watch(
               class="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring"
             />
           </label>
-          <label class="text-xs font-medium text-gray-600 flex flex-col gap-1">
+          <label class="text-xs font-medium text-toned flex flex-col gap-1">
             Horizontal Gap
             <input
               v-model.number="localSettings.layout.horizontalGap"
@@ -125,11 +123,11 @@ watch(
       </section>
 
       <section>
-        <h4 class="text-xs uppercase tracking-wide text-gray-500 mb-2">
+        <h4 class="text-xs uppercase tracking-wide text-muted mb-2">
           Node Size
         </h4>
         <div class="grid grid-cols-2 gap-3">
-          <label class="text-xs font-medium text-gray-600 flex flex-col gap-1">
+          <label class="text-xs font-medium text-toned flex flex-col gap-1">
             Min Width
             <input
               v-model.number="localSettings.node.minWidth"
@@ -138,16 +136,7 @@ watch(
               class="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring"
             />
           </label>
-          <label class="text-xs font-medium text-gray-600 flex flex-col gap-1">
-            Max Width
-            <input
-              v-model.number="localSettings.node.maxWidth"
-              type="number"
-              min="80"
-              class="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring"
-            />
-          </label>
-          <label class="text-xs font-medium text-gray-600 flex flex-col gap-1">
+          <label class="text-xs font-medium text-toned flex flex-col gap-1">
             Min Height
             <input
               v-model.number="localSettings.node.minHeight"
@@ -156,7 +145,7 @@ watch(
               class="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring"
             />
           </label>
-          <label class="text-xs font-medium text-gray-600 flex flex-col gap-1">
+          <label class="text-xs font-medium text-toned flex flex-col gap-1">
             Horizontal Padding
             <input
               v-model.number="localSettings.node.horizontalPadding"
@@ -165,7 +154,7 @@ watch(
               class="w-full border rounded px-2 py-1 text-sm focus:outline-none focus:ring"
             />
           </label>
-          <label class="text-xs font-medium text-gray-600 flex flex-col gap-1">
+          <label class="text-xs font-medium text-toned flex flex-col gap-1">
             Vertical Padding
             <input
               v-model.number="localSettings.node.verticalPadding"
@@ -175,7 +164,7 @@ watch(
             />
           </label>
           <label
-            class="text-xs font-medium text-gray-600 flex flex-col gap-1 col-span-2"
+            class="text-xs font-medium text-toned flex flex-col gap-1 col-span-2"
           >
             Font Size (px)
             <input

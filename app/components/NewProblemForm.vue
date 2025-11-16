@@ -125,7 +125,7 @@ const handleCreateProblem = async () => {
         <span
           v-for="tag in tags"
           :key="tag"
-          class="bg-blue-100 text-blue-800 rounded-full text-sm flex items-center gap-2"
+          class="bg-accented text-highlighted rounded-full text-sm flex items-center gap-2"
         >
           <span class="flex ml-2 my-1 items-center">
             {{ tag }}
@@ -153,7 +153,7 @@ const handleCreateProblem = async () => {
         size="lg"
         class="cursor-pointer"
         :ui="{
-          base: 'px-4 py-2 bg-gradient-to-r from-sky-400 via-indigo-400 to-fuchsia-500 hover:opacity-90 disabled:opacity-50',
+          base: 'text-inverted dark:text-default px-4 py-2 bg-gradient-to-r from-sky-400 via-indigo-400 to-fuchsia-500 hover:opacity-90 disabled:opacity-50',
           leadingIcon: 'size-4',
         }"
         icon="i-lucide-sparkles"

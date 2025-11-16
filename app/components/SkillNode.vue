@@ -76,18 +76,8 @@ const measureLabel = () => {
   const widthWithPadding = bbox.width + props.sizing.horizontalPadding
   const heightWithPadding = bbox.height + props.sizing.verticalPadding
 
-  const effectiveMaxWidth = Math.max(
-    props.disableLabelClamp ? Number.POSITIVE_INFINITY : props.sizing.maxWidth,
-    props.sizing.minWidth,
-  )
-
-  const clampedWidth = Math.min(
-    Math.max(props.sizing.minWidth, widthWithPadding),
-    effectiveMaxWidth,
-  )
-
   measuredSize.value = {
-    width: clampedWidth,
+    width: Math.max(props.sizing.minWidth, widthWithPadding),
     height: Math.max(props.sizing.minHeight, heightWithPadding),
   }
 }
@@ -154,7 +144,7 @@ watch(
         xmlns="http://www.w3.org/1999/xhtml"
         :class="[
           'w-full h-full flex items-center justify-center font-semibold',
-          isDimmed ? 'text-gray-400' : 'text-gray-800',
+          isDimmed ? 'text-dimmed' : 'text-highlighted dark:text-inverted',
         ]"
         :style="labelBoxStyle"
       >

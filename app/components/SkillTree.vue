@@ -179,18 +179,8 @@ const calculateNodeSize = (
   const widthWithPadding = bbox.width + props.nodeSizing.horizontalPadding
   const heightWithPadding = bbox.height + props.nodeSizing.verticalPadding
 
-  const effectiveMaxWidth = Math.max(
-    disableLabelClamp ? Number.POSITIVE_INFINITY : props.nodeSizing.maxWidth,
-    props.nodeSizing.minWidth,
-  )
-
-  const clampedWidth = Math.min(
-    Math.max(props.nodeSizing.minWidth, widthWithPadding),
-    effectiveMaxWidth,
-  )
-
   return {
-    width: clampedWidth,
+    width: Math.max(props.nodeSizing.minWidth, widthWithPadding),
     height: Math.max(props.nodeSizing.minHeight, heightWithPadding),
   }
 }
@@ -383,6 +373,13 @@ const checkIfNodeOrLinkClicked = (target: EventTarget | null): boolean => {
   return false
 }
 
+const getHorizontalPanScale = (): number => {
+  if (!svgRef.value) return 1
+  const rect = svgRef.value.getBoundingClientRect()
+  if (!rect.width || !props.width) return 1
+  return Math.max(1, rect.width / props.width)
+}
+
 const handleBackgroundClick = (event: MouseEvent) => {
   if (!svgRef.value) return
 
@@ -412,8 +409,10 @@ const handlePointerDown = (event: PointerEvent) => {
   const rect = svgRef.value.getBoundingClientRect()
   const scaleX = currentViewBox.width / rect.width
   const scaleY = currentViewBox.height / rect.height
+  const effectiveScaleX = scaleX * getHorizontalPanScale()
 
-  const viewBoxX = (event.clientX - rect.left) * scaleX + currentViewBox.x
+  const viewBoxX =
+    (event.clientX - rect.left) * effectiveScaleX + currentViewBox.x
   const viewBoxY = (event.clientY - rect.top) * scaleY + currentViewBox.y
 
   cursorDownPosition.value = {
@@ -444,8 +443,9 @@ const handlePointerMove = (event: PointerEvent) => {
   const rect = svgRef.value.getBoundingClientRect()
   const scaleX = currentViewBox.width / rect.width
   const scaleY = currentViewBox.height / rect.height
+  const effectiveScaleX = scaleX * getHorizontalPanScale()
 
-  const currentViewBoxX = (event.clientX - rect.left) * scaleX
+  const currentViewBoxX = (event.clientX - rect.left) * effectiveScaleX
   const currentViewBoxY = (event.clientY - rect.top) * scaleY
 
   panOffset.value = {

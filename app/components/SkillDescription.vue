@@ -20,7 +20,7 @@ defineProps<Props>()
             :style="{
               '--bg-color': `rgb(${getScoreColorRgb(selectedNode.score)})`,
             }"
-            class="inline-flex items-center justify-center px-3 py-1 rounded-xl text-white font-semibold text-sm bg-(--bg-color)"
+            class="inline-flex items-center justify-center px-3 py-1 rounded-xl text-inverted font-semibold text-sm bg-(--bg-color)"
           >
             {{ selectedNode.score }}
           </div>

@@ -20,42 +20,42 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="bg-white rounded-lg shadow p-6 w-full space-y-4">
+  <div class="bg-default rounded-lg shadow p-6 w-full space-y-4">
     <div class="flex items-start justify-between gap-3">
       <h3 class="font-semibold text-base leading-6">Add alternative path</h3>
       <UButton
         label="Exit"
         size="xs"
         variant="ghost"
-        color="neutral"
+        color="error"
         @click="emit('exit')"
       />
     </div>
 
     <div>
-      <p class="text-sm text-gray-600 mb-2">
+      <p class="text-sm text-toned mb-2">
         Select two connected nodes to create an alternative path between them:
       </p>
       <div class="space-y-2">
         <div class="flex items-center gap-2">
-          <span class="text-sm font-medium text-gray-700">From:</span>
+          <span class="text-sm font-medium text-default">From:</span>
           <UBadge
             v-if="props.fromNode?.label"
             size="sm"
             color="secondary"
             :label="props.fromNode.label"
           />
-          <span v-else class="text-sm text-gray-400">Not selected</span>
+          <span v-else class="text-sm text-dimmed">Not selected</span>
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-sm font-medium text-gray-700">To:</span>
+          <span class="text-sm font-medium text-default">To:</span>
           <UBadge
             v-if="props.toNode?.label"
             size="sm"
             color="primary"
             :label="props.toNode.label"
           />
-          <span v-else class="text-sm text-gray-400">Not selected</span>
+          <span v-else class="text-sm text-dimmed">Not selected</span>
         </div>
       </div>
       <UButton
@@ -75,28 +75,21 @@ const emit = defineEmits<{
         placeholder="Why is this step difficult?"
         :rows="2"
         class="w-full"
+        color="neutral"
+        variant="outline"
         @update:model-value="value => emit('update:reason', value)"
       />
     </div>
 
-    <div class="flex flex-col gap-2">
-      <UButton
-        :loading="props.isLoading"
-        :disabled="!props.canSubmit"
-        @click="emit('submit')"
-        :color="props.canSubmit ? 'primary' : 'neutral'"
-        size="sm"
-        class="w-full"
-        label="Add alternative path"
-      />
-      <UButton
-        color="error"
-        variant="soft"
-        size="xs"
-        class="self-start"
-        label="Exit alternative mode"
-        @click="emit('exit')"
-      />
-    </div>
+    <UButton
+      block
+      :loading="props.isLoading"
+      :disabled="!props.canSubmit"
+      @click="emit('submit')"
+      :color="props.canSubmit ? 'primary' : 'neutral'"
+      size="sm"
+      class="w-full"
+      label="Add alternative path"
+    />
   </div>
 </template>
