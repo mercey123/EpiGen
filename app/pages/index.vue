@@ -231,7 +231,7 @@ const handleAddAlternativeSolution = async () => {
 </script>
 
 <template>
-  <div class="container mx-auto px-4 py-8">
+  <div class="flex flex-col container mx-auto px-4 py-8 gap-12">
     <div class="flex flex-col items-center gap-4">
       <UBadge
         icon="i-lucide-lightbulb"

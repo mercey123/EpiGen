@@ -73,56 +73,93 @@ const handleCreateProblem = async () => {
 </script>
 
 <template>
-  <div class="bg-white rounded-lg shadow p-6 mb-6">
-    <h2 class="text-xl font-semibold mb-4">Создать новую проблему</h2>
+  <div
+    class="flex flex-col gap-4 bg-default border border-muted rounded-2xl shadow-lg px-6 py-8"
+  >
+    <div class="flex flex-col gap-2">
+      <span class="text-sm"> What challenge are you facing? </span>
 
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-2">
-        Название проблемы
-      </label>
-      <UInput
+      <UTextarea
         v-model="problemDescription"
-        placeholder="Введите название проблемы..."
-        class="w-full"
+        autoresize
+        :rows="8"
+        color="neutral"
+        variant="soft"
+        placeholder="E.g., I'm struggling to save money each month and want to build an emergency fund..."
       />
     </div>
 
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-2">
-        Конечная цель (необязательно)
-      </label>
-      <UInput
+    <div class="flex flex-col gap-2">
+      <span class="text-sm"> End goal (optional) </span>
+
+      <UTextarea
         v-model="problemGoal"
-        placeholder="Опишите конечную цель..."
-        class="w-full"
+        autoresize
+        :rows="2"
+        color="neutral"
+        variant="soft"
+        placeholder="E.g., I want to build an emergency fund of $1,000 in 3 months..."
       />
     </div>
 
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700 mb-2"> Теги </label>
-      <div class="flex gap-2 mb-2">
+    <div class="flex flex-col gap-2">
+      <span class="text-sm"> Tags </span>
+      <div class="flex gap-2">
         <UInput
           v-model="currentTag"
-          placeholder="Добавить тег"
+          placeholder="Add a tag"
+          color="neutral"
+          variant="subtle"
           @keyup.enter="addTag"
         />
-        <UButton @click="addTag">Добавить</UButton>
+        <UButton
+          class="rounded-lg"
+          color="secondary"
+          variant="soft"
+          @click="addTag"
+          label="Add"
+        />
       </div>
+
       <div v-if="tags.length > 0" class="flex flex-wrap gap-2">
         <span
           v-for="tag in tags"
           :key="tag"
-          class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm flex items-center gap-2"
+          class="bg-blue-100 text-blue-800 rounded-full text-sm flex items-center gap-2"
         >
-          {{ tag }}
+          <span class="flex ml-2 my-1 items-center">
+            {{ tag }}
+          </span>
 
-          <UButton color="secondary" @click="removeTag(tag)" label="x" />
+          <UButton
+            class="w-fit h-fit rounded-full"
+            size="sm"
+            color="error"
+            variant="ghost"
+            @click="removeTag(tag)"
+            label="x"
+          />
         </span>
       </div>
     </div>
 
-    <UButton :loading="isLoading" @click="handleCreateProblem" color="primary">
-      Создать проблему
-    </UButton>
+    <div class="flex justify-between items-center">
+      <span class="text-sm text-muted">
+        {{ problemDescription.length }}
+        {{ `characters${problemDescription.length > 1 ? 's' : ''}` }}
+      </span>
+
+      <UButton
+        size="lg"
+        :ui="{
+          base: 'px-4 py-2 bg-gradient-to-r from-sky-400 via-indigo-400 to-fuchsia-500 hover:opacity-75 disabled:opacity-50',
+          leadingIcon: 'size-4',
+        }"
+        icon="i-lucide-star"
+        :loading="isLoading"
+        label="Generate Solution Map"
+        @click="handleCreateProblem"
+      />
+    </div>
   </div>
 </template>
